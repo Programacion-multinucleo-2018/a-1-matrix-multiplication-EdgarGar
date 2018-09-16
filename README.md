@@ -27,3 +27,10 @@ Rubric:
 5. The report file has tables with the performance data for the different configurations, as well as for the speedup obtained.
 6. The report file has the computer's characteristics, as well as the conclusions.
 
+**NOTES**
+
+1. Speedups and conclusions are missing.
+2. How many threads did you use for the CPU version with threads?
+3. What were the PC specs where you ran the tests? CPU? GPU?
+
+**Grade: 0; No code compiles**
