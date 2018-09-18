@@ -23,13 +23,13 @@ __global__ void matrixMultOnHostGPU(int *a, int *b, int *c) {
  }
 }*/
 //Multiplicacion en GPU
-__global__ void matrixMultOnHostGPU1D(long *MatA, long *MatB, long *MatC const int N)
+__global__ void matrixMultOnHostGPU1D(long *MatA, long *MatB, long *MatC, const int N)
 {
   unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
   //verificacion de las filas para la multiplicacion
   if (ix < N ){
-    for(int in = 0;in < n; in++){
-      for (int iy = 0; iy < n; iy++){
+    for(int in = 0;in < N; in++){
+      for (int iy = 0;iy < N; iy++){
         //sum += a[fil * N + k] * b[k * N + col];
         MatC[in * N + ix] += MatA[in * N + iy] * MatB[iy * N +ix];
       }
@@ -40,7 +40,7 @@ __global__ void matrixMultOnHostGPU1D(long *MatA, long *MatB, long *MatC const i
 //Multiplicacion en CPU
 void matrixMultOnHost(long * A, long * B, long * C, int N)
 {
-  for (int i = 0; i < N; ++) {
+  for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
       for (int k = 0; k < N; k++){
         //Operacion para hacer la regla del karatzo fila por culumna
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
     matrixMultOnHost(h_A, h_B, hostRef, N);
     auto end_cpu =  chrono::high_resolution_clock::now();
 
-    chrono::duration<long, std::milli> duration_ms = end_cpu - start_cpu;
+    chrono::duration<float, milli> duration_ms = end_cpu - start_cpu;
     printf("sumMatrixOnHost elapsed %f ms\n", duration_ms.count());
 
     // malloc device global memory
@@ -113,8 +113,8 @@ int main(int argc, char *argv[])
     SAFE_CALL(cudaMemcpy(d_MatB, h_B, nBytes, cudaMemcpyHostToDevice), "Error copying d_MatB");
 
     // invoke kernel at host side
-    int dimx = 128;
-    dim3 block((n + block.x - 1) / block.x));
+    dim3 block(128);
+    dim3 grid((n + block.x - 1) / (block.x));
     printf("grid.x %d block.x %d \n", grid.x, block.x);
 
     //kernel

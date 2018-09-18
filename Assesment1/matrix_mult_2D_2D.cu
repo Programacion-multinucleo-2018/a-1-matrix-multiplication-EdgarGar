@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <math.h>
 #include <chrono>
+#include "common.h"
 
 using namespace std;
 
@@ -28,8 +29,8 @@ __global__ void matrixMultOnHostGPU1D(long *MatA, long *MatB, long *MatC const i
   unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
   unsigned int iy = blockIdx.y + blockIdx.y * blockDim.y;
   //verificacion de las filas para la multiplicacion
-  if (ix < N && iy < n){
-    for (int k = 0; k < n; k++){
+  if (ix < N && iy < N){
+    for (int k = 0; k < N; k++){
       //sum += a[fil * N + k] * b[k * N + col];
       MatC[iy * N + ix] += MatA[iy * N + iy] * MatB[k * N +ix];
     }
@@ -39,7 +40,7 @@ __global__ void matrixMultOnHostGPU1D(long *MatA, long *MatB, long *MatC const i
 //Multiplicacion en CPU
 void matrixMultOnHost(long * A, long * B, long * C, int N)
 {
-  for (int i = 0; i < N; ++) {
+  for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
       for (int k = 0; k < N; k++){
         //Operacion para hacer la regla del karatzo fila por culumna
@@ -98,7 +99,7 @@ int main(int argc, char *argv[])
     matrixMultOnHost(h_A, h_B, hostRef, N);
     auto end_cpu =  chrono::high_resolution_clock::now();
 
-    chrono::duration<long, std::milli> duration_ms = end_cpu - start_cpu;
+    chrono::duration<long, milli> duration_ms = end_cpu - start_cpu;
     printf("sumMatrixOnHost elapsed %f ms\n", duration_ms.count());
 
     // malloc device global memory

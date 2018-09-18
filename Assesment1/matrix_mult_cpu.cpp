@@ -42,13 +42,13 @@ void multMatrix(long *matA, long *matB, long *matC, int N) {
 
 int main(int argc, char* argv[]) {
     //Tamaño de la matriz
-    int n = 1000;
-    int bytes = N * N * sizeof(long*);
+    int N = 1000;
+    int nBytes = N * N * sizeof(long*);
 
     // Input matrix pointers
-    long *h_A = (long *)malloc(bytes);
-    long *h_A = (long *)malloc(bytes);
-    long *h_C = (long *)malloc(bytes);
+    long *h_A = (long *)malloc(nBytes);
+    long *h_B = (long *)malloc(nBytes);
+    long *h_C = (long *)malloc(nBytes);
 
     // Initialize matrix
     for(int i = 0; i < N*N; i++ ) {
@@ -65,9 +65,9 @@ int main(int argc, char* argv[]) {
     printf("multiply_matrix_gpu elapsed %f ms\n", duration_ms.count());
 
     // Free arrays memory
-    free(a);
-    free(b);
-    free(c);
+    free(h_A);
+    free(h_B);
+    free(h_C);
 
     return 0;
 }
