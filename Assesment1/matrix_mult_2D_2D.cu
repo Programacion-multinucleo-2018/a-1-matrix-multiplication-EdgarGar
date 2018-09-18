@@ -143,6 +143,9 @@ int main(int argc, char *argv[])
     SAFE_CALL(cudaFree(d_MatC), "Error freeing memory");
 
     // free host memory
+    cudaFree(d_MatA);
+    cudaFree(d_MatB);
+    cudaFree(d_MatC);
     free(h_A);
     free(h_B);
     free(hostRef);
