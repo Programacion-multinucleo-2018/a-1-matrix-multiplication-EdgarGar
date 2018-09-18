@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <iostream>
 #include <chrono>
 
 using namespace std;
+
 
 /*void sumMatrixOnHost(long *A, long *B, long *C, const int nx,
                      const int ny)
@@ -29,54 +29,45 @@ using namespace std;
 
     return;
 }*/
-void matrixMult(long * A, long * B, long * C const int N){
-  for(i = 0; i < n; i++) {
-       for(int j = 0; j < n; j++) {
-         for(int k = 0; k < n; k++) {
-        //Operacion para hacer la regla del karatzo fila por culumna
-        C[i * N + j] += A[i * N + k] * B[j + k * N];
-      }
+// Multiplies two matrices and store result in an output matrix
+void multMatrix(long *matA, long *matB, long *matC, int N) {
+    for(int i = 0; i<N; i++) {
+        for(int j=0; j<N; j++) {
+            for(int k=0; k<N; k++) {
+                matC[i*N+j] += matA[i*N+k] * matB[j+k*N];
+            }
+        }
     }
-  }
 }
 
-//No cambiar valores con H_ preguntara para que sirev la h en el main ya que todos los archivos la traen :/
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[]) {
     //Tamaño de la matriz
-    int N = 2000
+    int n = 1000;
+    int bytes = N * N * sizeof(long*);
 
-    //Codigo de vectores
-    int nx = N;
-    int ny = N;
+    // Input matrix pointers
+    long *h_A = (long *)malloc(bytes);
+    long *h_A = (long *)malloc(bytes);
+    long *h_C = (long *)malloc(bytes);
 
-    int nxy = nx * ny;
-    int nBytes = nxy * sizeof(int);
-
-    //llenado de la matriz
-    for(int i = 0; i < N * N; i++ ) {
-      a[i] = i+1;
-      b[i] = i+1;
+    // Initialize matrix
+    for(int i = 0; i < N*N; i++ ) {
+        h_A[i] = i+1;
+        h_B[i] = i+1;
     }
 
-    //malloc
-    long *h_A, *h_B, *h_C;
-    h_A = (long*)malloc(nBytes);
-    h_B = (long*)malloc(nBytes);
-    h_C = (long*)malloc(nBytes);
+    auto start_cpu =  std::chrono::high_resolution_clock::now();
+    multMatrix(h_A, h_B, h_C, N);
+    auto end_cpu =  std::chrono::high_resolution_clock::now();
 
-    fillMatrices(h_A, nxy);
-    fillMatrices(h_B, nxy);
+    // Tiempo
+    chrono::duration<float, milli> duration_ms = end_cpu - start_cpu;
+    printf("multiply_matrix_gpu elapsed %f ms\n", duration_ms.count());
 
-    auto startTime = chrono::high_resolution_clock::now();
-    matrixMult(h_A, h_B, h_C, N);
-    auto endTime = chrono::high_resolution_clock::now();
-    chrono::duration<long, std::milli> duration_ms = endTime - startTime;
+    // Free arrays memory
+    free(a);
+    free(b);
+    free(c);
 
-
-    free(h_A);
-    free(h_B);
-    free(h_C);
-
-    printf("Tiempo %d repeticiones:  %f matriz donde x: %d y: %d", repeticiones, promedio, tam, tam);
     return 0;
 }

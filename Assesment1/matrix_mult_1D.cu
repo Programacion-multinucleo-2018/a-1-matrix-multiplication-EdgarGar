@@ -9,34 +9,6 @@
 
 using namespace std;
 
-//Multiplicacion en CPU
-void matrixMultOnHost(long * A, long * B, long * C const int N)
-{
-  for (int i = 0; i < N; ++) {
-    for (int j = 0; j < N; j++) {
-      for (int k = 0; k < N; k++){
-        //Operacion para hacer la regla del karatzo fila por culumna
-        C[i * N + j] += A[i * N * k] * B[j + k * N];
-      }
-    }
-  }
-}
-void checkResult(long *hostRef, long *gpuRef, const int N){
-  double epsilon = 1.0E-8;
-  bool match = 1;
-  for (int i = 0; i < N; i++){
-    if (abs(hostRef[i] - gpuRef[i]) > epsilon){
-      match = 0;
-      printf("host %f gpu %f\n", hostRef[i], gpuRef[i]);
-      break;
-    }
-  }
-  if (match)
-    printf("Matrix match.\n");
-  else
-    printf("Matrix do not match.\n");
-}
-
 /*
 __global__ void matrixMultOnHostGPU(int *a, int *b, int *c) {
  int k, sum = 0;
@@ -65,10 +37,37 @@ __global__ void matrixMultOnHostGPU1D(long *MatA, long *MatB, long *MatC const i
   }
 }
 
+//Multiplicacion en CPU
+void matrixMultOnHost(long * A, long * B, long * C, int N)
+{
+  for (int i = 0; i < N; ++) {
+    for (int j = 0; j < N; j++) {
+      for (int k = 0; k < N; k++){
+        //Operacion para hacer la regla del karatzo fila por culumna
+        C[i * N + j] += A[i * N * k] * B[j + k * N];
+      }
+    }
+  }
+}
+void checkResult(long *hostRef, long *gpuRef, const int N){
+  double epsilon = 1.0E-8;
+  bool match = 1;
+  for (int i = 0; i < N; i++){
+    if (abs(hostRef[i] - gpuRef[i]) > epsilon){
+      match = 0;
+      printf("host %f gpu %f\n", hostRef[i], gpuRef[i]);
+      break;
+    }
+  }
+  if (match)
+    printf("Matrix match.\n");
+  else
+    printf("Matrix do not match.\n");
+}
+
+
 int main(int argc, char *argv[])
 {
-    printf("%s Starting...\n", argv[0]);
-
     // set up device
     int dev = 0;
     cudaDeviceProp deviceProp;
@@ -78,19 +77,13 @@ int main(int argc, char *argv[])
 
     // Tamaño de la matriz
     int N = 2000;
-    int nx = N;
-    int ny = N;
-
-    int nxy = nx * ny;
-    int nBytes = nxy * sizeof(long);
-    printf("Matrix size: nx %d ny %d\n", nx, ny);
+    int nBytes = N * N * sizeof(long);
 
     // host memory
-    long *h_A, *h_B, *hostRef, *gpuRef;
-    h_A = (long *)malloc(nBytes);
-    h_B = (long *)malloc(nBytes);
-    hostRef = (long *)malloc(nBytes);
-    gpuRef = (long *)malloc(nBytes);
+    long *h_A = (long *)malloc(nBytes);
+    long *h_B = (long *)malloc(nBytes);
+    long *hostRef = (long *)malloc(nBytes);
+    long *gpuRef = (long *)malloc(nBytes);
 
     // Matriz inicalizada
     for(int i = 0; i < N * N; i++ ) {
@@ -142,10 +135,7 @@ int main(int argc, char *argv[])
     SAFE_CALL(cudaMemcpy(gpuRef, d_MatC, nBytes, cudaMemcpyDeviceToHost), "Error copying d_MatC");
 
     // Compare results
-    if(checkResult(hostRef, gpuRef))
-      printf("They are equal\n");
-    else
-      printf("They are different\n");
+    checkResult(hostRef, gpuRef, N);
 
     // free device global memory
     SAFE_CALL(cudaFree(d_MatA), "Error freeing memory");
