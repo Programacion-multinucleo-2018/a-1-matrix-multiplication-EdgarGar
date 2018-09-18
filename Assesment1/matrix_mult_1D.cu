@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <math.h>
 #include <chrono>
+#include "common.h"
 
 using namespace std;
 
@@ -95,9 +96,9 @@ int main(int argc, char *argv[])
     memset(gpuRef, 0, nBytes);
 
     // add matrix at host side for result SAFE_CALLs
-    auto start_cpu =  chrono::high_resolution_clock::now();
+    start_cpu =  chrono::high_resolution_clock::now();
     matrixMultOnHost(h_A, h_B, hostRef, N);
-    auto end_cpu =  chrono::high_resolution_clock::now();
+    end_cpu =  chrono::high_resolution_clock::now();
 
     chrono::duration<float, milli> duration_ms = end_cpu - start_cpu;
     printf("sumMatrixOnHost elapsed %f ms\n", duration_ms.count());
@@ -114,7 +115,7 @@ int main(int argc, char *argv[])
 
     // invoke kernel at host side
     dim3 block(128);
-    dim3 grid((n + block.x - 1) / (block.x));
+    dim3 grid((N + block.x - 1) / (block.x));
     printf("grid.x %d block.x %d \n", grid.x, block.x);
 
     //kernel

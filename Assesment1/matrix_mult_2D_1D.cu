@@ -24,7 +24,7 @@ __global__ void matrixMultOnHostGPU(int *a, int *b, int *c) {
  }
 }*/
 //Multiplicacion en GPU
-__global__ void matrixMultOnHostGPU1D(long *MatA, long *MatB, long *MatC const int N)
+__global__ void matrixMultOnHostGPU1D(long *MatA, long *MatB, long *MatC, const int N)
 {
   unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
   unsigned int iy = blockIdx.y;
@@ -95,11 +95,11 @@ int main(int argc, char *argv[])
     memset(gpuRef, 0, nBytes);
 
     // add matrix at host side for result SAFE_CALLs
-    auto start_cpu =  chrono::high_resolution_clock::now();
+    start_cpu =  chrono::high_resolution_clock::now();
     matrixMultOnHost(h_A, h_B, hostRef, N);
-    auto end_cpu =  chrono::high_resolution_clock::now();
+    end_cpu =  chrono::high_resolution_clock::now();
 
-    chrono::duration<long, milli> duration_ms = end_cpu - start_cpu;
+    chrono::duration<float, milli> duration_ms = end_cpu - start_cpu;
     printf("sumMatrixOnHost elapsed %f ms\n", duration_ms.count());
 
     // malloc device global memory
@@ -114,14 +114,14 @@ int main(int argc, char *argv[])
 
     // invoke kernel at host side
     dim3 block(128);
-    dim3 grid((n + block.x - 1) / (block.x));
+    dim3 grid((N + block.x - 1) / (block.x));
     printf("grid.x %d block.x %d \n", grid.x, block.x);
 
     //kernel
-    start_cpu =  chrono::high_resolution_clock::now();
+    start_cpu = chrono::high_resolution_clock::now();
     matrixMultOnHostGPU1D<<<grid, block>>>(d_MatA, d_MatB, d_MatC, N);
     cudaDeviceSynchronize();
-    end_cpu = std::chrono::high_resolution_clock::now();
+    end_cpu = chrono::high_resolution_clock::now();
 
     //Formula
     duration_ms = end_cpu - start_cpu;

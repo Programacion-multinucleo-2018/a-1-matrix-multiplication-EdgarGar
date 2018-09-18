@@ -95,11 +95,11 @@ int main(int argc, char *argv[])
     memset(gpuRef, 0, nBytes);
 
     // add matrix at host side for result SAFE_CALLs
-    auto start_cpu =  chrono::high_resolution_clock::now();
+    start_cpu =  chrono::high_resolution_clock::now();
     matrixMultOnHost(h_A, h_B, hostRef, N);
-    auto end_cpu =  chrono::high_resolution_clock::now();
+    end_cpu =  chrono::high_resolution_clock::now();
 
-    chrono::duration<long, milli> duration_ms = end_cpu - start_cpu;
+    chrono::duration<float, milli> duration_ms = end_cpu - start_cpu;
     printf("sumMatrixOnHost elapsed %f ms\n", duration_ms.count());
 
     // malloc device global memory
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
     // transfer data from host to device
     SAFE_CALL(cudaMemcpy(d_MatA, h_A, nBytes, cudaMemcpyHostToDevice), "Error copying d_MatA");
     SAFE_CALL(cudaMemcpy(d_MatB, h_B, nBytes, cudaMemcpyHostToDevice), "Error copying d_MatB");
-    SAFE_CALL(cudaMemcpy(d_c, 0, bytes));
+    SAFE_CALL(cudaMemcpy(d_MatC, 0, nBytes));
 
     // invoke kernel at host side
     dim3 block(32, 32);
