@@ -24,7 +24,7 @@ __global__ void matrixMultOnHostGPU(int *a, int *b, int *c) {
  }
 }*/
 //Multiplicacion en GPU
-__global__ void matrixMultOnHostGPU1D(long *MatA, long *MatB, long *MatC const int N)
+__global__ void matrixMultOnHostGPU1D(long *MatA, long *MatB, long *MatC, const int N)
 {
   unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
   unsigned int iy = blockIdx.y + blockIdx.y * blockDim.y;
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     for(int i = 0; i < N * N; i++ ) {
         h_A[i] = i+1;
         h_B[i] = i+1;
-      }
+    }
 
     memset(hostRef, 0, nBytes);
     memset(gpuRef, 0, nBytes);
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 
     // invoke kernel at host side
     dim3 block(32, 32);
-    dim3 grid((n + block.x - 1) / block.x, (n + block.y - 1) / block.y);
+    dim3 grid((N + block.x - 1) / block.x, (n + block.y - 1) / block.y);
     printf("grid.x %d grid.y %d block.x %d block.y %d\n", grid.x, grid.y, block.x, block.y);
     //kernel
     start_cpu =  chrono::high_resolution_clock::now();
@@ -154,5 +154,5 @@ int main(int argc, char *argv[])
     // reset device
     SAFE_CALL(cudaDeviceReset(), "Error reseting");
 
-    return (0);
+    return 0;
 }
