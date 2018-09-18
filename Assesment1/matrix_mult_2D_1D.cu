@@ -1,10 +1,10 @@
 //LOS CODIGOS FUERON MODIFICADOS DEL MATERIAL DADOD EN CLASE CON EL OBJETIVO DE QUE FUERA MAS FACIL COMPRENDER
 //SE USARON ALGUNAS PAGINAS DE INTERNET Y LIBROS Y CODIGO COMENTADO, LAS REFENECIAS ESTAN EN EL REPORTE Y EN CODIGO
 
-#include <iostream>
-#include <cstdio>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
+#include <iostream>
 #include <chrono>
 #include "common.h"
 

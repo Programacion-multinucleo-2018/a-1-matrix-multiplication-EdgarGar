@@ -1,10 +1,10 @@
 //LOS CODIGOS FUERON MODIFICADOS DEL MATERIAL DADOD EN CLASE CON EL OBJETIVO DE QUE FUERA MAS FACIL COMPRENDER
 //SE USARON ALGUNAS PAGINAS DE INTERNET Y LIBROS Y CODIGO COMENTADO, LAS REFENECIAS ESTAN EN EL REPORTE Y EN CODIGO
 
-#include <iostream>
-#include <cstdio>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
+#include <iostream>
 #include <chrono>
 #include "common.h"
 
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
     // transfer data from host to device
     SAFE_CALL(cudaMemcpy(d_MatA, h_A, nBytes, cudaMemcpyHostToDevice), "Error copying d_MatA");
     SAFE_CALL(cudaMemcpy(d_MatB, h_B, nBytes, cudaMemcpyHostToDevice), "Error copying d_MatB");
-    SAFE_CALL(cudaMemcpy(d_MatC, 0, nBytes));
+    SAFE_CALL(cudaMemset(d_MatC, 0, nBytes));
 
     // invoke kernel at host side
     dim3 block(32, 32);
