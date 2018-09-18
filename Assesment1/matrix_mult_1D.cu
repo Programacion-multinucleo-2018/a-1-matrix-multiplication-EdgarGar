@@ -119,10 +119,10 @@ int main(int argc, char *argv[])
     printf("grid.x %d block.x %d \n", grid.x, block.x);
 
     //kernel
-    auto start_cpu =  chrono::high_resolution_clock::now();
+    auto start_cpu = chrono::high_resolution_clock::now();
     matrixMultOnHostGPU1D<<<grid, block>>>(d_MatA, d_MatB, d_MatC, N);
     cudaDeviceSynchronize();
-    auto end_cpu = std::chrono::high_resolution_clock::now();
+    auto end_cpu = chrono::high_resolution_clock::now();
 
     //Formula
     duration_ms = end_cpu - start_cpu;

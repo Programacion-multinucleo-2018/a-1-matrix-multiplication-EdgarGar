@@ -95,9 +95,9 @@ int main(int argc, char *argv[])
     memset(gpuRef, 0, nBytes);
 
     // add matrix at host side for result SAFE_CALLs
-    auto start_cpu =  chrono::high_resolution_clock::now();
+    start_cpu =  chrono::high_resolution_clock::now();
     matrixMultOnHost(h_A, h_B, hostRef, N);
-    auto end_cpu =  chrono::high_resolution_clock::now();
+    end_cpu =  chrono::high_resolution_clock::now();
 
     chrono::duration<float, milli> duration_ms = end_cpu - start_cpu;
     printf("sumMatrixOnHost elapsed %f ms\n", duration_ms.count());
@@ -118,10 +118,10 @@ int main(int argc, char *argv[])
     printf("grid.x %d block.x %d \n", grid.x, block.x);
 
     //kernel
-    start_cpu = chrono::high_resolution_clock::now();
+    auto start_cpu = chrono::high_resolution_clock::now();
     matrixMultOnHostGPU1D<<<grid, block>>>(d_MatA, d_MatB, d_MatC, N);
     cudaDeviceSynchronize();
-    end_cpu = chrono::high_resolution_clock::now();
+    auto end_cpu = chrono::high_resolution_clock::now();
 
     //Formula
     duration_ms = end_cpu - start_cpu;
