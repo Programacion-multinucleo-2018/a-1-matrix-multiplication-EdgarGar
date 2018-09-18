@@ -95,9 +95,9 @@ int main(int argc, char *argv[])
     memset(gpuRef, 0, nBytes);
 
     // add matrix at host side for result SAFE_CALLs
-    start_cpu =  chrono::high_resolution_clock::now();
+    auto start_cpu =  chrono::high_resolution_clock::now();
     matrixMultOnHost(h_A, h_B, hostRef, N);
-    end_cpu =  chrono::high_resolution_clock::now();
+    auto end_cpu =  chrono::high_resolution_clock::now();
 
     chrono::duration<float, milli> duration_ms = end_cpu - start_cpu;
     printf("sumMatrixOnHost elapsed %f ms\n", duration_ms.count());
