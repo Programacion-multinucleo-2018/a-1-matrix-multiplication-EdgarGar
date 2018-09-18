@@ -7,6 +7,7 @@
 #include <iostream>
 #include <chrono>
 #include "common.h"
+#include <omp.h>
 
 using namespace std;
 
@@ -29,22 +30,33 @@ __global__ void matrixMultOnHostGPU1D(long *MatA, long *MatB, long *MatC, const 
   unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
   unsigned int iy = blockIdx.y;
   //verificacion de las filas para la multiplicacion
+  unsigned int index = iy * N + ix;
+  
   if (ix < N && iy < N){
+    long sum = 0;
     for (int k = 0; k < N; k++){
       //sum += a[fil * N + k] * b[k * N + col];
-      MatC[iy * N + ix] += MatA[iy * N + iy] * MatB[k * N +ix];
+      sum += MatA[iy * N + k] * MatB[k * N +ix];
+      // MatC[iy * N + ix] += MatA[iy * N + iy] * MatB[k * N +ix];
     }
+    MatC[index] = sum;
   }
 }
 
 //Multiplicacion en CPU
 void matrixMultOnHost(long * A, long * B, long * C, int N)
 {
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < N; j++) {
-      for (int k = 0; k < N; k++){
+  int index = 0;
+  #pragma omp parallel for private(index) shared(A, B, C)
+  for (int row = 0; row < N; row++) 
+  {
+    for (int col = 0;col < N; col++) 
+    {
+      index = row * N + col;
+      for (int col_temp = 0; col_temp < N; col_temp++)
+      {
         //Operacion para hacer la regla del karatzo fila por culumna
-        C[i * N + j] += A[i * N * k] * B[j + k * N];
+        C[index] += A[row * N + col_temp] * B[col + col_temp * N];
       }
     }
   }
@@ -87,8 +99,8 @@ int main(int argc, char *argv[])
 
     // Matriz inicalizada
     for(int i = 0; i < N * N; i++ ) {
-        h_A[i] = i+1;
-        h_B[i] = i+1;
+        h_A[i] = 1;
+        h_B[i] = 1;
       }
 
     memset(hostRef, 0, nBytes);

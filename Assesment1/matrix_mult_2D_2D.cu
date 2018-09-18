@@ -49,6 +49,7 @@ void matrixMultOnHost(long * A, long * B, long * C, int N)
     }
   }
 }
+
 void checkResult(long *hostRef, long *gpuRef, const int N){
   double epsilon = 1.0E-8;
   bool match = 1;
@@ -111,11 +112,11 @@ int main(int argc, char *argv[])
     // transfer data from host to device
     SAFE_CALL(cudaMemcpy(d_MatA, h_A, nBytes, cudaMemcpyHostToDevice), "Error copying d_MatA");
     SAFE_CALL(cudaMemcpy(d_MatB, h_B, nBytes, cudaMemcpyHostToDevice), "Error copying d_MatB");
-    SAFE_CALL(cudaMemset(d_MatC, 0, nBytes));
+    SAFE_CALL(cudaMemset(d_MatC, 0, nBytes), "");
 
     // invoke kernel at host side
     dim3 block(32, 32);
-    dim3 grid((N + block.x - 1) / block.x, (n + block.y - 1) / block.y);
+    dim3 grid((N + block.x - 1) / block.x, (N + block.y - 1) / block.y);
     printf("grid.x %d grid.y %d block.x %d block.y %d\n", grid.x, grid.y, block.x, block.y);
     //kernel
     start_cpu =  chrono::high_resolution_clock::now();
